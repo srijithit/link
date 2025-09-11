@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Safety Checker</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: monospace;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .banner {
+            color: #39ff14;
+            white-space: pre;
+            font-size: 14px;
+        }
+
+        .title {
+            color: #00ffff;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .developer {
+            color: #ff66cc;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #f1f1f1;
+        }
+
+        .warning {
+            color: #ff4d4d;
+        }
+
+        .safe {
+            color: #33ff99;
+        }
+
+        .loading {
+            color: #f0db4f;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <pre>
+ _   _    _    ____ _  __
+| | | |  / \  / ___| |/ /
+| |_| | / _ \| |   | ' / 
+|  _  |/ ___ \ |___| . \ 
+|_| |_/_/   \_\____|_|\_\
+        </pre>
+    </div>
+
+    <div class="title">*** TO FIND THE URL IS SAFE OR NOT ***</div>
+    <div class="developer">Developed by [SRIJITH] [HARISHANKAR] [ANTONYKUMAR]</div>
+
+    <input type="text" id="urlInput" placeholder="Enter a URL to check">
+    <button onclick="startScan()">Scan</button>
+
+    <div id="output"></div>
+
+    <script>
+        const suspiciousKeywords = [
+            "login", "verify", "account", "update", "free",
+            "secure", "bank", "ebay", "paypal", "password",
+            "signin", "confirm", "reset" , "http://127.0.0.1:5000"
+        ];
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function startScan() {
+            const url = document.getElementById("urlInput").value.trim();
+            const output = document.getElementById("output");
+            output.innerHTML = "";
+
+            if (!url) {
+                output.innerHTML = "<div class='warning'>Please enter a URL.</div>";
+                return;
+            }
+
+            const steps = [
+                "Initializing Scan",
+                "Analyzing URL",
+                "Checking DNS Records",
+                "Matching with Open AI Database"
+            ];
+
+            for (const step of steps) {
+                await showScanning(step, 1500);
+            }
+
+            let foundKeywords = [];
+            const urlLower = url.toLowerCase();
+
+            for (let keyword of suspiciousKeywords) {
+                if (urlLower.includes(keyword)) {
+                    foundKeywords.push(keyword);
+                }
+            }
+
+            if (foundKeywords.length > 0) {
+                output.innerHTML = `<div class='warning'>[!] Suspicious URL detected! not safe</div>`;
+            } else {
+                output.innerHTML = "<div class='safe'>[✓] No suspicious  found. URL appears safe.</div>";
+            }
+        }
+
+        async function showScanning(task, duration) {
+            const output = document.getElementById("output");
+            const spinner = ["|", "/", "-", "\\"];
+            let i = 0;
+            const start = Date.now();
+
+            return new Promise(resolve => {
+                const interval = setInterval(() => {
+                    const now = Date.now();
+                    if (now - start >= duration) {
+                        clearInterval(interval);
+                        output.innerHTML = "";
+                        resolve();
+                    } else {
+                        output.innerHTML = `<div class='loading'>${task} ${spinner[i % spinner.length]}</div>`;
+                        i++;
+                    }
+                }, 100);
+            });
+        }
+    </script>
+</body>
+</html>
